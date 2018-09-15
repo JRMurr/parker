@@ -1,19 +1,26 @@
-use rocket_contrib::{Template, Value};
+use bson;
+use mongodb::coll::Collection;
+use mongodb::Error;
+use rocket_contrib::Template;
 
+#[derive(Serialize, Deserialize)]
 pub struct Document {
     pub doc_id: String,
+    pub title: String,
+    pub name: String,
 }
 
 impl Document {
-    fn get_context(&self) -> Value {
-        json!({
-            "title": "Poopus",
-            "name": "Moopus",
-        })
+    pub fn find(coll: &Collection, doc_id: String) -> Result<Option<Document>, Error> {
+        let val_opt = coll.find_one(Some(doc! { "_id": doc_id }), None).unwrap();
+        let doc = match val_opt {
+            Some(val) => bson::from_bson(bson::Bson::Document(val)).unwrap(),
+            None => None,
+        };
+        Ok(doc)
     }
 
     pub fn render(&self) -> Template {
-        let context = self.get_context();
-        Template::render("index", context)
+        Template::render("index", self)
     }
 }
