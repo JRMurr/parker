@@ -12,7 +12,7 @@ pub struct Document {
 
 impl Document {
     pub fn find(coll: &Collection, doc_id: String) -> Result<Option<Document>, Error> {
-        let val_opt = coll.find_one(Some(doc! { "_id": doc_id }), None).unwrap();
+        let val_opt = coll.find_one(Some(doc! { "doc_id" => doc_id }), None).unwrap();
         let doc = match val_opt {
             Some(val) => bson::from_bson(bson::Bson::Document(val)).unwrap(),
             None => None,

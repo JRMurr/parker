@@ -1,9 +1,16 @@
 version: '3'
 
+# Use this instead of the local directory for building the project
+# to prevent the container from fighting with external build tools
+volumes:
+  rust-target:
+
 services:
   db:
     image: mongo:latest
     command: mongod --bind_ip_all
+    ports:
+      - "27017:27017"
 
   rust-api:
     build: ./
@@ -11,11 +18,12 @@ services:
     command: bash -c "rustup update && wait-for-it db:27017 && cargo watch -x run"
     tty: true  # Colorize output
     volumes:
-      - ./:/parker:rw
+      - .:/parker:rw
+      - rust-target:/parker/target
     depends_on:
       - db
     environment:
-      - DATABASE_URL=mongodb://localhost:27017/
+      - DATABASE_URL=mongodb://db:27017/
       - RUST_BACKTRACE=1
     ports:
       - "8000:8000"

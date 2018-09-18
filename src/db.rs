@@ -1,40 +1,38 @@
-use mongodb::Client;
+use std::env;
+use std::ops::Deref;
 
-const DEFAULT_MONGO_ADDRESS: &str = "localhost";
+use mongodb::{Client, ThreadedClient};
+use rocket::{
+    request::{self, FromRequest},
+    Outcome, Request, State,
+};
 
-pub struct MongoClient {
-    address: String,
-}
+#[derive(Clone)]
+pub struct MongoClient(pub Client);
 
 impl MongoClient {
-    pub fn connect(&self) -> std::sync::Arc<mongodb::ClientInner> {
-        let database_url = match env::var(self.address) {
-            Ok(value) => value,
-            Err(_) => DEFAULT_MONGO_ADDRESS.to_string(),
-        };
-
-        Client::connect(&database_url, 27017).expect("Failed to initialize client.")
+    pub fn connect() -> MongoClient {
+        let uri = &env::var("DATABASE_URL").expect("DATABASE_URL not specified");
+        let client = Client::with_uri(uri).unwrap();
+        MongoClient(client)
     }
 }
 
-pub struct Collection {
-    client: &Client,
-    collection: u8,
+impl<'a, 'r> FromRequest<'a, 'r> for MongoClient {
+    type Error = ();
+
+    fn from_request(request: &'a Request<'r>) -> request::Outcome<MongoClient, Self::Error> {
+        // The Client type is actually just an Arc so a clone is cheap
+        let client = request.guard::<State<MongoClient>>()?;
+        Outcome::Success(client.clone())
+    }
 }
 
-impl Collection {
-    fn new(client: &Client, db: String, collection: String) -> Collection {
-        Collection {
-            client,
-            collection: client.db(db).collection(collection),
-        }
-    }
+// For the convenience of using an &MongoClient as a &Client.
+impl Deref for MongoClient {
+    type Target = Client;
 
-    fn find(
-        &self,
-        doc_id: String,
-    ) -> Result<std::option::Option<bson::ordered::OrderedDocument>, io::Error> {
-        let id = ObjectId::with_string(&doc_id).unwrap();
-        self.collection.find_one(Some(doc! { "_id" => id }), None)
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
