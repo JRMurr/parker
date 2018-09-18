@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  db:
+    image: mongo:latest
+    command: mongod --bind_ip_all
+
+  rust-api:
+    build: ./
+    image: parker
+    command: bash -c "rustup update && wait-for-it db:27017 && cargo watch -x run"
+    tty: true  # Colorize output
+    volumes:
+      - ./:/parker:rw
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=mongodb://localhost:27017/
+      - RUST_BACKTRACE=1
+    ports:
+      - "8000:8000"
