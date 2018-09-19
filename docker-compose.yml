@@ -15,7 +15,7 @@ services:
   rust-api:
     build: ./
     image: parker
-    command: bash -c "rustup update && wait-for-it db:27017 && cargo watch -x run"
+    command: bash -c "rustup update && cargo update && wait-for-it db:27017 && cargo watch -x run"
     tty: true  # Colorize output
     volumes:
       - .:/parker:rw

@@ -1,4 +1,3 @@
-use std::env;
 use std::ops::Deref;
 
 use mongodb::{Client, ThreadedClient};
@@ -11,9 +10,8 @@ use rocket::{
 pub struct MongoClient(pub Client);
 
 impl MongoClient {
-    pub fn connect() -> MongoClient {
-        let uri = &env::var("DATABASE_URL").expect("DATABASE_URL not specified");
-        let client = Client::with_uri(uri).unwrap();
+    pub fn connect(db_uri: &str) -> MongoClient {
+        let client = Client::with_uri(db_uri).unwrap();
         MongoClient(client)
     }
 }

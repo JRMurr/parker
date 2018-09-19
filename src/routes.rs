@@ -1,20 +1,35 @@
-use mongodb::{ThreadedClient,db::ThreadedDatabase};
-use rocket_contrib::{Json, Template};
+use std::collections::HashMap as Map;
+
+use mongodb::{db::ThreadedDatabase, ThreadedClient};
+use rocket::State;
+use rocket_contrib::Template;
 
 use db::MongoClient;
 use doc::Document;
 
-fn get_doc(client: MongoClient, doc_id: &str) -> Option<Document> {
+fn render_doc(
+    client: MongoClient,
+    render_context: &Map<String, String>,
+    doc_id: &str,
+) -> Option<Template> {
     let coll = &client.db("test").collection("documents");
-    Document::find(&coll, doc_id.to_string()).unwrap()
+    let doc_opt = Document::find(&coll, doc_id).unwrap();
+    doc_opt.map(|doc| doc.render(render_context))
+}
+
+#[get("/")]
+pub fn get_index(
+    client: MongoClient,
+    render_context: State<Map<String, String>>,
+) -> Option<Template> {
+    render_doc(client, &render_context, "index")
 }
 
 #[get("/<doc_id>")]
-pub fn get(client: MongoClient, doc_id: String) -> Option<Template> {
-    get_doc(client, &doc_id).map(|d| d.render())
-}
-
-#[get("/<doc_id>/json")]
-pub fn get_json(client: MongoClient, doc_id: String) -> Option<Json<Document>> {
-    get_doc(client, &doc_id).map(Json)
+pub fn get(
+    client: MongoClient,
+    render_context: State<Map<String, String>>,
+    doc_id: String,
+) -> Option<Template> {
+    render_doc(client, &render_context, &doc_id)
 }
