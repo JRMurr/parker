@@ -53,6 +53,6 @@ fn main() {
         .attach(Template::fairing())
         .manage(db::MongoClient::connect(&cfg.settings.database_uri))
         .manage(cfg.render_context)
-        .mount("/", routes![routes::get_index, routes::get])
+        .mount("/", routes![routes::get_index, routes::get, routes::post])
         .launch();
 }

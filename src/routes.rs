@@ -2,10 +2,10 @@ use std::collections::HashMap as Map;
 
 use mongodb::{db::ThreadedDatabase, ThreadedClient};
 use rocket::State;
-use rocket_contrib::Template;
+use rocket_contrib::{Json, Template};
 
 use db::MongoClient;
-use doc::Document;
+use doc::WebDocument;
 
 fn render_doc(
     client: MongoClient,
@@ -13,7 +13,7 @@ fn render_doc(
     doc_id: &str,
 ) -> Option<Template> {
     let coll = &client.db("test").collection("documents");
-    let doc_opt = Document::find(&coll, doc_id).unwrap();
+    let doc_opt = WebDocument::find(&coll, doc_id).unwrap();
     doc_opt.map(|doc| doc.render(render_context))
 }
 
@@ -32,4 +32,9 @@ pub fn get(
     doc_id: String,
 ) -> Option<Template> {
     render_doc(client, &render_context, &doc_id)
+}
+
+#[post("/", format = "application/json", data = "<doc>")]
+pub fn post(client: MongoClient, doc: Json<WebDocument>) {
+    doc.insert(&client.db("test").collection("documents"));
 }
