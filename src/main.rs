@@ -14,15 +14,16 @@ extern crate structopt;
 
 use std::collections::HashMap as Map;
 
+use bson::Bson;
 use rocket_contrib::Template;
 use structopt::StructOpt;
 
-mod db;
+mod database;
 mod doc;
 mod routes;
 
 #[derive(StructOpt, Debug)]
-#[structopt(name = "basic")]
+#[structopt(name = "Parker")]
 struct Opt {
     /// Config file path
     #[structopt(short = "c", long = "config", default_value = "parker.toml",)]
@@ -32,12 +33,13 @@ struct Opt {
 #[derive(Deserialize)]
 struct Settings {
     database_uri: String,
+    database_name: String,
 }
 
 #[derive(Deserialize)]
 struct Cfg {
     settings: Settings,
-    render_context: Map<String, String>,
+    render_context: Map<String, Bson>,
 }
 
 fn main() {
@@ -51,8 +53,12 @@ fn main() {
 
     rocket::ignite()
         .attach(Template::fairing())
-        .manage(db::MongoClient::connect(&cfg.settings.database_uri))
-        .manage(cfg.render_context)
+        .manage(
+            database::MongoDatabase::connect(
+                &cfg.settings.database_uri,
+                &cfg.settings.database_name,
+            ).unwrap(),
+        ).manage(cfg.render_context)
         .mount("/", routes![routes::get_index, routes::get, routes::post])
         .launch();
 }

@@ -1,5 +1,5 @@
 [settings]
-database_uri = "mongodb://localhost:27017"
+database_uri = "mongodb://db:27017"
 database_name = "parker"
 
 [render_context]
