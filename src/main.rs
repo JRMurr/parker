@@ -12,15 +12,15 @@ extern crate serde_json;
 extern crate serde_derive;
 extern crate structopt;
 
-use std::collections::HashMap as Map;
-
-use bson::Bson;
-use rocket_contrib::Template;
-use structopt::StructOpt;
-
+mod context;
 mod database;
 mod doc;
 mod routes;
+
+use rocket_contrib::Template;
+use structopt::StructOpt;
+
+use context::RenderContext;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Parker")]
@@ -39,7 +39,7 @@ struct Settings {
 #[derive(Deserialize)]
 struct Cfg {
     settings: Settings,
-    render_context: Map<String, Bson>,
+    render_context: RenderContext,
 }
 
 fn main() {

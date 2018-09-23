@@ -1,5 +1,3 @@
-use std::collections::HashMap as Map;
-
 use bson::{self, Bson};
 use mongodb::{
     self,
@@ -7,12 +5,14 @@ use mongodb::{
 };
 use rocket_contrib::Template;
 
+use context::RenderContext;
+
 #[derive(Serialize, Deserialize)]
 pub struct WebDocument {
     slug: String,
     template: String,
     #[serde(flatten)]
-    context: Map<String, Bson>,
+    render_context: RenderContext,
 }
 
 impl WebDocument {
@@ -33,10 +33,9 @@ impl WebDocument {
         }
     }
 
-    pub fn render(self, render_context: &Map<String, Bson>) -> Template {
-        // Merge the global render context with the context for this document
-        let mut context = render_context.clone();
-        context.extend(self.context);
-        Template::render(self.template, context)
+    pub fn render(self, mut render_context: RenderContext) -> Template {
+        // Merge document render context into global context
+        render_context.merge(self.render_context);
+        Template::render(self.template, render_context)
     }
 }
