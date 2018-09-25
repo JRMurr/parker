@@ -1,10 +1,11 @@
-#![feature(plugin)]
+#![feature(decl_macro, plugin, proc_macro_non_items)]
 #![plugin(rocket_codegen)]
 
 #[macro_use]
 extern crate bson;
 extern crate config;
 extern crate mongodb;
+extern crate pulldown_cmark;
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate serde_json;
@@ -12,15 +13,16 @@ extern crate serde_json;
 extern crate serde_derive;
 extern crate structopt;
 
-mod context;
 mod database;
 mod doc;
+mod render;
 mod routes;
 
+use rocket::routes;
 use rocket_contrib::Template;
 use structopt::StructOpt;
 
-use context::RenderContext;
+use render::RenderContext;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Parker")]
@@ -52,7 +54,7 @@ fn main() {
     let cfg: Cfg = cfg_handler.try_into().unwrap();
 
     rocket::ignite()
-        .attach(Template::fairing())
+        .attach(Template::custom(render::init_template_engines))
         .manage(
             database::MongoDatabase::connect(
                 &cfg.settings.database_uri,

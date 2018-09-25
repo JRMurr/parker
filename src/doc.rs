@@ -5,7 +5,7 @@ use mongodb::{
 };
 use rocket_contrib::Template;
 
-use context::RenderContext;
+use render::RenderContext;
 
 #[derive(Serialize, Deserialize)]
 pub struct WebDocument {
@@ -35,7 +35,7 @@ impl WebDocument {
 
     pub fn render(self, mut render_context: RenderContext) -> Template {
         // Merge document render context into global context
-        render_context.merge(self.render_context);
+        render_context.extend(self.render_context);
         Template::render(self.template, render_context)
     }
 }

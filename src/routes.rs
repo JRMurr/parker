@@ -1,9 +1,9 @@
 use mongodb::db::ThreadedDatabase;
 use rocket_contrib::{Json, Template};
 
-use context::RenderContext;
 use database::MongoDatabase;
 use doc::WebDocument;
+use render::RenderContext;
 
 fn render_doc(db: MongoDatabase, render_context: RenderContext, doc_id: &str) -> Option<Template> {
     let coll = &db.collection("documents");
