@@ -1,5 +1,5 @@
 {% extends "base" %}
 
 {% block content %}
-    <p>{{content}}</p>
+    {{ content|markdown }}
 {% endblock content %}

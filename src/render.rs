@@ -34,10 +34,13 @@ impl<'a, 'r> FromRequest<'a, 'r> for RenderContext {
 
 fn markdown_filter(value: Value, _: HashMap<String, Value>) -> Result<Value, tera::Error> {
     let s = try_get_value!("markdown", "value", String, value);
+
+    // Convert markdown to HTML
     let parser = Parser::new(s.as_str());
     let mut html_buf = String::new();
-    tera::to_value(html::push_html(&mut html_buf, parser))
-        .map_err(|err| tera::Error::from_kind(tera::ErrorKind::Json(err)))
+    html::push_html(&mut html_buf, parser);
+
+    tera::to_value(html_buf).map_err(|err| tera::Error::from_kind(tera::ErrorKind::Json(err)))
 }
 
 pub fn init_template_engines(engines: &mut Engines) {
