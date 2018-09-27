@@ -27,7 +27,7 @@ impl WebDocument {
     }
 
     pub fn insert(&self, coll: &Collection) -> mongodb::Result<InsertOneResult> {
-        match bson::to_bson(self).unwrap() {
+        match bson::to_bson(self)? {
             Bson::Document(doc) => coll.insert_one(doc, None),
             _ => panic!("No buen"), // TODO
         }
