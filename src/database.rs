@@ -19,7 +19,9 @@ impl MongoDatabase {
 impl<'a, 'r> FromRequest<'a, 'r> for MongoDatabase {
     type Error = ();
 
-    fn from_request(request: &'a Request<'r>) -> request::Outcome<MongoDatabase, Self::Error> {
+    fn from_request(
+        request: &'a Request<'r>,
+    ) -> request::Outcome<MongoDatabase, Self::Error> {
         let db = request.guard::<State<MongoDatabase>>()?;
         // The Database type is actually just an Arc so a clone is cheap
         Outcome::Success(db.clone())

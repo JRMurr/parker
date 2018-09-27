@@ -16,7 +16,10 @@ pub struct WebDocument {
 }
 
 impl WebDocument {
-    pub fn find(coll: &Collection, slug: &str) -> mongodb::Result<Option<WebDocument>> {
+    pub fn find(
+        coll: &Collection,
+        slug: &str,
+    ) -> mongodb::Result<Option<WebDocument>> {
         // Get the value from the DB
         let val_opt = coll.find_one(Some(doc! { "slug" => slug }), None)?;
         // Parse to a WebDocument
@@ -26,7 +29,10 @@ impl WebDocument {
         })
     }
 
-    pub fn insert(&self, coll: &Collection) -> mongodb::Result<InsertOneResult> {
+    pub fn insert(
+        &self,
+        coll: &Collection,
+    ) -> mongodb::Result<InsertOneResult> {
         match bson::to_bson(self)? {
             Bson::Document(doc) => coll.insert_one(doc, None),
             _ => panic!("No buen"), // TODO

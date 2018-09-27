@@ -24,7 +24,9 @@ impl RenderContext {
 impl<'a, 'r> FromRequest<'a, 'r> for RenderContext {
     type Error = ();
 
-    fn from_request(request: &'a Request<'r>) -> request::Outcome<RenderContext, Self::Error> {
+    fn from_request(
+        request: &'a Request<'r>,
+    ) -> request::Outcome<RenderContext, Self::Error> {
         let context = request.guard::<State<RenderContext>>()?;
         // Each request needs its own clone for the render. The global
         // context should be small so this clone won't be too expensive.
@@ -32,7 +34,10 @@ impl<'a, 'r> FromRequest<'a, 'r> for RenderContext {
     }
 }
 
-fn markdown_filter(value: Value, _: HashMap<String, Value>) -> Result<Value, tera::Error> {
+fn markdown_filter(
+    value: Value,
+    _: HashMap<String, Value>,
+) -> Result<Value, tera::Error> {
     let s = try_get_value!("markdown", "value", String, value);
 
     // Convert markdown to HTML
@@ -40,7 +45,8 @@ fn markdown_filter(value: Value, _: HashMap<String, Value>) -> Result<Value, ter
     let mut html_buf = String::new();
     html::push_html(&mut html_buf, parser);
 
-    tera::to_value(html_buf).map_err(|err| tera::Error::from_kind(tera::ErrorKind::Json(err)))
+    tera::to_value(html_buf)
+        .map_err(|err| tera::Error::from_kind(tera::ErrorKind::Json(err)))
 }
 
 pub fn init_template_engines(engines: &mut Engines) {
