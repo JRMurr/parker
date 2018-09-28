@@ -19,10 +19,8 @@ mod render;
 mod routes;
 
 use rocket::routes;
-use rocket_contrib::Template;
+use rocket_contrib::{static_files::StaticFiles, Template};
 use structopt::StructOpt;
-
-use render::RenderContext;
 
 #[derive(StructOpt, Debug)]
 #[structopt(name = "Parker")]
@@ -33,15 +31,10 @@ struct Opt {
 }
 
 #[derive(Deserialize)]
-struct Settings {
+struct Cfg {
     database_uri: String,
     database_name: String,
-}
-
-#[derive(Deserialize)]
-struct Cfg {
-    settings: Settings,
-    render_context: RenderContext,
+    www_dir: String,
 }
 
 fn main() {
@@ -57,10 +50,12 @@ fn main() {
         .attach(Template::custom(render::init_template_engines))
         .manage(
             database::MongoDatabase::connect(
-                &cfg.settings.database_uri,
-                &cfg.settings.database_name,
+                &cfg.database_uri,
+                &cfg.database_name,
             ).unwrap(),
-        ).manage(cfg.render_context)
-        .mount("/", routes![routes::get_index, routes::get, routes::post])
+        ).mount(
+            "/",
+            routes![routes::get_index, routes::get_doc, routes::post,],
+        ).mount("/", StaticFiles::from(format!("{}/static", cfg.www_dir)))
         .launch();
 }

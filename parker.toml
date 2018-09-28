@@ -1,6 +1,3 @@
-[settings]
 database_uri = "mongodb://db:27017"
 database_name = "parker"
-
-[render_context]
-title = "Hello it me"
+www_dir = "./www"
