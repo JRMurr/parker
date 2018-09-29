@@ -5,7 +5,7 @@ import requests
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('slug')
+    parser.add_argument('route')
     parser.add_argument('--template', '-t', default='page')
     parser.add_argument('--content', '-c', default='')
     args = parser.parse_args()

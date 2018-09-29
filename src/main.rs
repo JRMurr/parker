@@ -26,7 +26,7 @@ use structopt::StructOpt;
 #[structopt(name = "Parker")]
 struct Opt {
     /// Config file path
-    #[structopt(short = "c", long = "config", default_value = "parker.toml",)]
+    #[structopt(short = "c", long = "config", default_value = "parker.toml")]
     config_file: String,
 }
 
@@ -54,10 +54,13 @@ fn main() {
             database::MongoDatabase::connect(
                 &cfg.database_uri,
                 &cfg.database_name,
-            ).unwrap(),
-        ).mount(
+            )
+            .unwrap(),
+        )
+        .mount(
             "/",
             routes![routes::get_index, routes::get_doc, routes::post],
-        ).mount("/static", StaticFiles::from(cfg.static_dir))
+        )
+        .mount("/static", StaticFiles::from(cfg.static_dir))
         .launch();
 }

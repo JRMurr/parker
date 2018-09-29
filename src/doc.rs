@@ -9,8 +9,8 @@ use rocket_contrib::Template;
 
 #[derive(Serialize, Deserialize)]
 pub struct WebDocument {
-    route: String,
-    template: String,
+    pub route: String,
+    pub template: String,
     #[serde(flatten)]
     render_context: HashMap<String, Bson>,
 }
@@ -35,7 +35,8 @@ impl WebDocument {
     ) -> mongodb::Result<InsertOneResult> {
         match bson::to_bson(self)? {
             Bson::Document(doc) => coll.insert_one(doc, None),
-            _ => panic!("No buen"), // TODO
+            // I don't even know what could cause this case
+            _ => panic!("WebDocument did not serialize to Document!"),
         }
     }
 
