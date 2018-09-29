@@ -1,4 +1,4 @@
-#![feature(decl_macro, plugin, proc_macro_non_items)]
+#![feature(decl_macro, never_type, plugin, proc_macro_non_items)]
 #![plugin(rocket_codegen)]
 
 #[macro_use]
@@ -34,12 +34,14 @@ struct Opt {
 struct Cfg {
     database_uri: String,
     database_name: String,
-    www_dir: String,
+    static_dir: String,
 }
 
 fn main() {
+    // Load command line args
     let opt = Opt::from_args();
 
+    // Load cfg
     let mut cfg_handler = config::Config::default();
     cfg_handler
         .merge(config::File::with_name(&opt.config_file))
@@ -55,7 +57,7 @@ fn main() {
             ).unwrap(),
         ).mount(
             "/",
-            routes![routes::get_index, routes::get_doc, routes::post,],
-        ).mount("/", StaticFiles::from(format!("{}/static", cfg.www_dir)))
+            routes![routes::get_index, routes::get_doc, routes::post],
+        ).mount("/static", StaticFiles::from(cfg.static_dir))
         .launch();
 }

@@ -23,7 +23,6 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL=mongodb://db:27017/
       - RUST_BACKTRACE=1
     ports:
       - "8000:8000"

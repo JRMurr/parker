@@ -1,12 +1,14 @@
+use std::path::PathBuf;
+
 use mongodb::db::ThreadedDatabase;
 use rocket_contrib::{Json, Template};
 
 use database::MongoDatabase;
 use doc::WebDocument;
 
-fn render_doc(db: MongoDatabase, doc_id: &str) -> Option<Template> {
+fn render_doc(db: MongoDatabase, doc_route: &str) -> Option<Template> {
     let coll = &db.collection("documents");
-    let doc_opt = WebDocument::find(&coll, doc_id).unwrap();
+    let doc_opt = WebDocument::find(&coll, doc_route).unwrap();
     doc_opt.map(|doc| doc.render())
 }
 
@@ -15,9 +17,9 @@ pub fn get_index(db: MongoDatabase) -> Option<Template> {
     render_doc(db, "index")
 }
 
-#[get("/<doc_id>")]
-pub fn get_doc(db: MongoDatabase, doc_id: String) -> Option<Template> {
-    render_doc(db, &doc_id)
+#[get("/<doc_route..>", rank = 20)]
+pub fn get_doc(db: MongoDatabase, doc_route: PathBuf) -> Option<Template> {
+    render_doc(db, &doc_route.to_string_lossy())
 }
 
 #[post("/", format = "application/json", data = "<doc>")]

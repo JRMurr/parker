@@ -1,0 +1,6 @@
+[global]
+address = "0.0.0.0"
+
+[development]
+template_dir = "./www/templates"
+static_dir = "./www/static"

@@ -9,7 +9,7 @@ use rocket_contrib::Template;
 
 #[derive(Serialize, Deserialize)]
 pub struct WebDocument {
-    slug: String,
+    route: String,
     template: String,
     #[serde(flatten)]
     render_context: HashMap<String, Bson>,
@@ -18,10 +18,10 @@ pub struct WebDocument {
 impl WebDocument {
     pub fn find(
         coll: &Collection,
-        slug: &str,
+        route: &str,
     ) -> mongodb::Result<Option<WebDocument>> {
         // Get the value from the DB
-        let val_opt = coll.find_one(Some(doc! { "slug" => slug }), None)?;
+        let val_opt = coll.find_one(Some(doc! { "route" => route }), None)?;
         // Parse to a WebDocument
         Ok(match val_opt {
             Some(val) => bson::from_bson(Bson::Document(val))?,

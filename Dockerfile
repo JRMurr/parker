@@ -1,7 +1,6 @@
 FROM rustlang/rust:nightly-slim
 
 WORKDIR /parker
-ENV ROCKET_ADDRESS=0.0.0.0
 RUN apt-get update && \
     apt-get install -y \
         libssl-dev \
