@@ -12,7 +12,7 @@ pub struct WebDocument {
     pub route: String,
     pub template: String,
     #[serde(flatten)]
-    render_context: HashMap<String, Bson>,
+    extra: HashMap<String, Bson>,
 }
 
 impl WebDocument {
@@ -41,6 +41,6 @@ impl WebDocument {
     }
 
     pub fn render(self) -> Template {
-        Template::render(self.template, self.render_context)
+        Template::render(self.template.clone(), self)
     }
 }
