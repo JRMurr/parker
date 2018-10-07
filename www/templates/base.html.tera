@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Example Site</title>
+    <head>
+        <meta charset="utf-8" />
+        <title>Example Site</title>
 
-    <link rel="shortcut icon" href="/static/favicon.ico" />
-    {% block links %}{% endblock links %}
-  </head>
-  <body>
-    {% block content %}{% endblock content %}
-  </body>
+        <link rel="shortcut icon" href="/static/favicon.ico" />
+        <link rel="stylesheet" href="/static/base.css" />
+        {% block links %}{% endblock links %}
+    </head>
+    <body>
+        {% block body %}{% endblock body %}
+    </body>
 </html>

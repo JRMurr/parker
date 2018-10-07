@@ -1,0 +1,11 @@
+{% block links %}
+    <link rel="stylesheet" href="/static/header.css" />
+{% endblock links %}
+
+<div class="header">
+    <span class="header-title">Example Site</span>
+    <button>Click me!!!11</button>
+    <ul>
+        <li><a href="/article/1">Article 1</a></li>
+    </ul>
+</div>

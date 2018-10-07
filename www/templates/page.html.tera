@@ -1,11 +1,12 @@
 {% extends "base" %}
 
 {% block links %}
-  <link rel="stylesheet" href="/static/page.css" />
+    <link rel="stylesheet" href="/static/page.css" />
 {% endblock links %}
 
-{% block content %}
-  <div class="content">
-    {{ content|markdown }}
-  </div>
-{% endblock content %}
+{% block body %}
+    {% include "header" %}
+    <div class="content">
+        {{ content|markdown }}
+    </div>
+{% endblock body %}

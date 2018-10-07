@@ -1,3 +1,6 @@
 .content {
-  color: green;
+    height: 100%;
+    margin: 60px;
+    color: green;
+    overflow: scroll;
 }

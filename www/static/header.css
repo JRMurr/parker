@@ -1,0 +1,11 @@
+.header {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    height: 80px;
+    background-color: gray;
+}
+
+.header-title {
+    margin-right: auto;
+}
